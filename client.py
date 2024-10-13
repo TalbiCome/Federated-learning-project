@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
 import prepare_dataset
+from torchvision import models
 
 # #############################################################################
 # 1. Regular PyTorch pipeline: nn.Module, train, test, and DataLoader
@@ -68,11 +69,21 @@ def test(net, valloader):
 # #############################################################################
 
 
+
 # Define Flower client
 class FlowerClient(fl.client.NumPyClient):
-    def __init__(self, cid, data_split, dataset, local_epochs, n):
+
+    def getModel(self, modelName):
+        if modelName == "CNN":
+            return Net().to(DEVICE)
+        elif modelName == "ResNet18":
+            return models.resnet18(pretrained=False).to(DEVICE)
+        elif modelName == "ResNet34":
+            return models.resnet34(pretrained=False).to(DEVICE)
+
+    def __init__(self, cid, data_split, dataset, local_epochs, n, modelName):
         self.cid = cid
-        self.net = Net().to(DEVICE)
+        self.net = self.getModel(modelName)
         self.epochs = local_epochs
         self.trainloader, self.valloader, _ = prepare_dataset.get_data_loader(n, cid, data_split=data_split, dataset=dataset)
 

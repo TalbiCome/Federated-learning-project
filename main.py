@@ -47,18 +47,26 @@ parser.add_argument(
     help="agregation strategy",
 )
 
+parser.add_argument(
+    "--model",
+    type=str,
+    default="CNN",
+    help="model",
+)
+
 n = parser.parse_args().n
 data_split = parser.parse_args().data_split
 dataset = parser.parse_args().dataset
 local_epochs = parser.parse_args().local_epochs
 rounds = parser.parse_args().round
 strategyStr = parser.parse_args().strategy
+model = parser.parse_args().model
 
 
 
 def client_fn(context: Context) -> Client:
     node_id = context.node_config["partition-id"]-1
-    return FlowerClient(node_id, data_split, dataset, local_epochs, n).to_client()
+    return FlowerClient(node_id, data_split, dataset, local_epochs, n, model).to_client()
 
 def server_fn(context: Context) -> ServerAppComponents:
     def strategyFactory():
