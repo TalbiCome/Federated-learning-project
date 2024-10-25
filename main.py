@@ -78,7 +78,7 @@ def server_fn(context: Context) -> ServerAppComponents:
             )
         elif(strategyStr == "FedAdam"):
             params = get_parameters(Net())
-            strategy = fl.server.strategy.FedAvg(
+            strategy = fl.server.strategy.FedAdam(
                 initial_parameters=ndarrays_to_parameters(params),
                 on_fit_config_fn=fit_config,
                 on_evaluate_config_fn=fit_config,
