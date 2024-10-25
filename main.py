@@ -6,6 +6,7 @@ from flwr.simulation import run_simulation
 from flwr.server import ServerApp, ServerConfig, ServerAppComponents
 from flwr.common import Context, ndarrays_to_parameters
 import argparse
+from torchvision import models
 
 
 parser = argparse.ArgumentParser(description="Flower")
@@ -77,7 +78,12 @@ def server_fn(context: Context) -> ServerAppComponents:
                 evaluate_metrics_aggregation_fn=weighted_average
             )
         elif(strategyStr == "FedAdam"):
-            params = get_parameters(Net())
+            if(model == "CNN"):
+                params = get_parameters(Net())
+            elif(model == "ResNet18"):
+                params = get_parameters(models.resnet18(pretrained=False))
+            elif(model == "ResNet34"):
+                params = get_parameters(models.resnet34(pretrained=False))
             strategy = fl.server.strategy.FedAdam(
                 initial_parameters=ndarrays_to_parameters(params),
                 on_fit_config_fn=fit_config,
