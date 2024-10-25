@@ -36,6 +36,8 @@ class Net(nn.Module):
         x = F.relu(self.fc2(x))
         return self.fc3(x)
 
+def get_parameters(net):
+    return [val.cpu().numpy() for _, val in net.state_dict().items()]
 
 def train(net, trainloader, epochs):
     """Train the model on the training set."""

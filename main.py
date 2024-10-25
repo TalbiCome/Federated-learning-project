@@ -1,10 +1,10 @@
 import flwr as fl
-from client import FlowerClient
+from client import FlowerClient, Net, get_parameters
 from server import weighted_average, fit_config
 from flwr.client import Client, ClientApp
 from flwr.simulation import run_simulation
 from flwr.server import ServerApp, ServerConfig, ServerAppComponents
-from flwr.common import Context
+from flwr.common import Context, ndarrays_to_parameters
 import argparse
 
 
@@ -77,7 +77,9 @@ def server_fn(context: Context) -> ServerAppComponents:
                 evaluate_metrics_aggregation_fn=weighted_average
             )
         elif(strategyStr == "FedAdam"):
+            params = get_parameters(Net())
             strategy = fl.server.strategy.FedAvg(
+                initial_parameters=ndarrays_to_parameters(params),
                 on_fit_config_fn=fit_config,
                 on_evaluate_config_fn=fit_config,
                 evaluate_metrics_aggregation_fn=weighted_average
