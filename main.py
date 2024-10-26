@@ -63,14 +63,13 @@ rounds = parser.parse_args().round
 strategyStr = parser.parse_args().strategy
 model = parser.parse_args().model
 
-
-
 def client_fn(context: Context) -> Client:
     node_id = context.node_config["partition-id"]-1
     return FlowerClient(node_id, data_split, dataset, local_epochs, n, model).to_client()
 
 def server_fn(context: Context) -> ServerAppComponents:
     def strategyFactory():
+        strategy = None
         if(strategyStr == "FedAvg"):
             strategy = fl.server.strategy.FedAvg(
                 on_fit_config_fn=fit_config,
@@ -88,17 +87,18 @@ def server_fn(context: Context) -> ServerAppComponents:
                 initial_parameters=ndarrays_to_parameters(params),
                 on_fit_config_fn=fit_config,
                 on_evaluate_config_fn=fit_config,
-                evaluate_metrics_aggregation_fn=weighted_average
+                evaluate_metrics_aggregation_fn=weighted_average,
+                eta=0.01,
+                eta_l=0.0316,
+                beta_1=0.9,
+                beta_2=0.99,
+                tau=0.001,
             )
-            
         return strategy
     # Create FedAvg strategy
     strategy = strategyFactory()
     config = ServerConfig(num_rounds=rounds)
     return ServerAppComponents(strategy=strategy, config=config)
-
-
-
 
 client = ClientApp(client_fn=client_fn)
 server = ServerApp(server_fn=server_fn)
