@@ -37,7 +37,7 @@ def client_fn2(context: Context) -> Client:
 
 def client_fn3(context: Context) -> Client:
     node_id = context.node_config["partition-id"]-1
-    return FlowerClient2(node_id, data_split, dataset, local_epochs, n, "ResNet34", "server").to_client
+    return FlowerClient2(node_id, data_split, dataset, local_epochs, n, "ResNet34", "server").to_client()
 
 strategy1 = specialFedAvg("CNN", rounds)
 def server_fn1(context: Context) -> ServerAppComponents:
@@ -62,17 +62,17 @@ def server_fn3(context: Context) -> ServerAppComponents:
 
 if __name__ == "__main__":
     # Run simulation
-    run_simulation(
-        server_app=ServerApp(server_fn=server_fn1),
-        client_app=ClientApp(client_fn=client_fn1),
-        num_supernodes=n,
-    )
+    # run_simulation(
+    #     server_app=ServerApp(server_fn=server_fn1),
+    #     client_app=ClientApp(client_fn=client_fn1),
+    #     num_supernodes=n,
+    # )
     
-    run_simulation(
-        server_app=ServerApp(server_fn=server_fn2),
-        client_app=ClientApp(client_fn=client_fn2),
-        num_supernodes=n,
-    )
+    # run_simulation(
+    #     server_app=ServerApp(server_fn=server_fn2),
+    #     client_app=ClientApp(client_fn=client_fn2),
+    #     num_supernodes=n,
+    # )
 
     run_simulation(
         server_app=ServerApp(server_fn=server_fn3),
