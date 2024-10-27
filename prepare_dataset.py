@@ -6,16 +6,12 @@ import numpy as np
 
 def load_datasets(num_clients: int, dataset, data_split):
     # Download and transform CIFAR-10 (train and test)
-    transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
-    )
+    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     if dataset == "CIFAR10":
         trainset = CIFAR10("./dataset", train=True, download=True, transform=transform)
         testset = CIFAR10("./dataset", train=False, download=True, transform=transform)
     else:
-        raise NotImplementedError(
-           "The dataset is not implemented"
-        )
+        raise NotImplementedError("The dataset is not implemented")
 
     if data_split == "iid":
         # Split training set into `num_clients` partitions to simulate different local datasets
@@ -38,11 +34,13 @@ def load_datasets(num_clients: int, dataset, data_split):
         for i in range(num_clients):
             datasets.append(Subset(trainset, data_indices_each_client[i]))
     else:
-        raise NotImplementedError(
-           "The data split is not implemented"
-        )
+        raise NotImplementedError("The data split is not implemented")
 
     # Split each partition into train/val and create DataLoader
+    trainloaders, valloaders, testloader = generateTrainingValidationSetAndDataLoader(datasets, testset)
+    return trainloaders, valloaders, testloader
+
+def generateTrainingValidationSetAndDataLoader(datasets, testset):
     trainloaders = []
     valloaders = []
     for ds in datasets:
@@ -53,8 +51,7 @@ def load_datasets(num_clients: int, dataset, data_split):
         trainloaders.append(DataLoader(ds_train, batch_size=32, shuffle=True))
         valloaders.append(DataLoader(ds_val, batch_size=32))
     testloader = DataLoader(testset, batch_size=32)
-    return trainloaders, valloaders, testloader
-
+    return trainloaders,valloaders,testloader
 
 def get_data_loader(num_clients: int, cid: int, dataset = "CIFAR10", data_split = "iid"):
     trainloaders, valloaders, testloader = load_datasets(num_clients, dataset, data_split)
