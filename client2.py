@@ -68,7 +68,7 @@ class FlowerClient2(fl.client.NumPyClient):
         self.epochs = local_epochs
         self.client_type = client_type
         self.trainloader, self.valloader, _ = prepare_dataset.get_data_loaderTyped(n, cid, data_split=data_split, dataset=dataset, clientType=self.client_type)
-        print(f"Client {self.cid} type: {self.client_type}, trainingSetLength: {len(self.trainloader.dataset)}, model:{modelName}")
+        print(f"Client {self.cid} type: {self.client_type}, trainingSetLength: {len(self.trainloader.dataset)}, model:{modelName}, data_split: {data_split}")
 
     def get_parameters(self, config):
         return [val.cpu().numpy() for _, val in self.net.state_dict().items()]
