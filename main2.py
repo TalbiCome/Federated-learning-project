@@ -1,6 +1,6 @@
 import flwr as fl
 from Net import Net, get_parameters
-from client2 import FlowerClient
+from client2 import FlowerClient2
 from server import weighted_average, fit_config
 from flwr.client import Client, ClientApp
 from flwr.simulation import run_simulation
@@ -22,7 +22,7 @@ model = parser.model
 
 def client_fn(context: Context) -> Client:
     node_id = context.node_config["partition-id"]-1
-    return FlowerClient(node_id, data_split, dataset, local_epochs, n, model).to_client()
+    return FlowerClient2(node_id, data_split, dataset, local_epochs, n, model).to_client()
 
 def server_fn(context: Context) -> ServerAppComponents:
 

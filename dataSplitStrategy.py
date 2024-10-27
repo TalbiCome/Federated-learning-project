@@ -11,10 +11,10 @@ def splitDataset(num_clients, trainset, data_split, clientType = "base"):
     elif data_split == "non_iid_class":
         return nonIidClassSplit(num_clients, trainset)
     elif data_split == "non_iid_mobile":
-        #the dataset size is reduced before the call of splitDataset in prepare_dataset.py
+        #the dataset size must be reduced before the call of splitDataset in prepare_dataset.py
         return nonIidSplit(num_clients, trainset)
     elif data_split == "non_iid_server":
-        #the dataset size is reduced before the call of splitDataset in prepare_dataset.py
+        #the dataset size must be reduced before the call of splitDataset in prepare_dataset.py
         return nonIidSplit(num_clients, trainset)
     else:
         raise NotImplementedError("The data split is not implemented")

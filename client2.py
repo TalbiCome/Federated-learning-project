@@ -52,7 +52,7 @@ def test(net, valloader):
 
 
 # Define Flower client
-class FlowerClient(fl.client.NumPyClient):
+class FlowerClient2(fl.client.NumPyClient):
 
     def getModel(self, modelName):
         if modelName == "CNN":
@@ -69,6 +69,7 @@ class FlowerClient(fl.client.NumPyClient):
         self.client_type = self.type_client()
         print(f"Client {self.cid} type: {self.client_type}")
         self.trainloader, self.valloader, _ = prepare_dataset.get_data_loaderTyped(n, cid, data_split=data_split, dataset=dataset, clientType=self.client_type)
+        print(f"trainloaderLenght: {len(self.trainloader.dataset)}")
 
     def type_client(self):
         if self.cid < 3:
