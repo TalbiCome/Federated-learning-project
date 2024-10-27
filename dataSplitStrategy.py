@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader, random_split, Subset
 import numpy as np
 
 
-def splitDataset(num_clients, trainset, data_split):
+def splitDataset(num_clients, trainset, data_split, clientType = "base"):
     if data_split == "iid":
         return iidSplit(num_clients, trainset)
 
@@ -12,7 +12,8 @@ def splitDataset(num_clients, trainset, data_split):
 
     elif data_split == "non_iid_class":
         return nonIidClassSplit(num_clients, trainset)
-    
+    elif data_split == "non_iid_mobile":
+        return nonIidClassSplit(num_clients, trainset)
     else:
         raise NotImplementedError("The data split is not implemented")
 
@@ -40,3 +41,26 @@ def nonIidClassSplit(num_clients, trainset):
     for i in range(num_clients):
         datasets.append(Subset(trainset, data_indices_each_client[i]))
     return datasets
+
+def nonIidMobileShrinkDatasets(num_clients, trainset, testset, clientType):
+    if(clientType == "mobile"):
+        trainset = keepOnlyXPercent(trainset, 0.70)
+        testset = keepOnlyXPercent(testset, 0.70)
+    elif(clientType == "server" or clientType == "laptop"):
+        trainset = keepOnlyXPercent(trainset, 0.15)
+        testset = keepOnlyXPercent(testset, 0.15)
+    return testset, trainset
+
+def nonIidServerShrinkDatasets(num_clients, trainset, testset, clientType):
+    if(clientType == "mobile" or clientType == "laptop"):
+        trainset = keepOnlyXPercent(trainset, 0.15)
+        testset = keepOnlyXPercent(testset, 0.15)
+    elif(clientType == "server" ):
+        trainset = keepOnlyXPercent(trainset, 0.70)
+        testset = keepOnlyXPercent(testset, 0.70)
+    return testset, trainset
+
+def keepOnlyXPercent(dataset, percent):
+    dataset_size = int(percent * len(dataset))
+    dataset_indices = np.random.choice(len(dataset), dataset_size, replace=False)
+    return Subset(dataset, dataset_indices)
