@@ -9,8 +9,6 @@ from flwr.common import Metrics
 def strategyFactory(strategyStr, modelString):
     if(strategyStr == "FedAvg"):
         return instanciateFedAvg()
-    elif(strategyStr == "FedAvgWithModel"):
-        return instanciateFedAvgWithModel(modelString)
     elif(strategyStr == "FedAdam"):
         return instanciateFedAdam(modelString)
     else:
@@ -32,10 +30,10 @@ class clusterFedAvg(fl.server.strategy.FedAvg):
             initial_parameters=ndarrays_to_parameters(self.params),
             on_fit_config_fn=fit_config,
             on_evaluate_config_fn=fit_config,
-            evaluate_metrics_aggregation_fn=self.weighted_average
+            evaluate_metrics_aggregation_fn=self.weighted_averageAndSaveResult
         )
 
-    def weighted_average(self, metrics: List[Tuple[int, Metrics]]):
+    def weighted_averageAndSaveResult(self, metrics: List[Tuple[int, Metrics]]):
         # Multiply accuracy of each client by number of examples used
         accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
         round = metrics[0][1]["round"]
