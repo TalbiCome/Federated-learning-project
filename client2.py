@@ -67,7 +67,8 @@ class FlowerClient(fl.client.NumPyClient):
         self.net = self.getModel(modelName)
         self.epochs = local_epochs
         self.client_type = self.type_client()
-        self.trainloader, self.valloader, _ = prepare_dataset.get_data_loaderTyped(n, cid, data_split=data_split, dataset=dataset, clientType= self.client_type)
+        print(f"Client {self.cid} type: {self.client_type}")
+        self.trainloader, self.valloader, _ = prepare_dataset.get_data_loaderTyped(n, cid, data_split=data_split, dataset=dataset, clientType=self.client_type)
 
     def type_client(self):
         if self.cid < 3:

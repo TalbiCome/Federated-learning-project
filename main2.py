@@ -1,6 +1,6 @@
 import flwr as fl
 from Net import Net, get_parameters
-from client import FlowerClient
+from client2 import FlowerClient
 from server import weighted_average, fit_config
 from flwr.client import Client, ClientApp
 from flwr.simulation import run_simulation

@@ -6,14 +6,16 @@ import numpy as np
 def splitDataset(num_clients, trainset, data_split, clientType = "base"):
     if data_split == "iid":
         return iidSplit(num_clients, trainset)
-
     elif data_split == "non_iid_number":
         return nonIidSplit(num_clients, trainset)
-
     elif data_split == "non_iid_class":
         return nonIidClassSplit(num_clients, trainset)
     elif data_split == "non_iid_mobile":
-        return nonIidClassSplit(num_clients, trainset)
+        #the dataset size is reduced before the call of splitDataset in prepare_dataset.py
+        return nonIidSplit(num_clients, trainset)
+    elif data_split == "non_iid_server":
+        #the dataset size is reduced before the call of splitDataset in prepare_dataset.py
+        return nonIidSplit(num_clients, trainset)
     else:
         raise NotImplementedError("The data split is not implemented")
 
@@ -62,5 +64,5 @@ def nonIidServerShrinkDatasets(num_clients, trainset, testset, clientType):
 
 def keepOnlyXPercent(dataset, percent):
     dataset_size = int(percent * len(dataset))
-    dataset_indices = np.random.choice(len(dataset), dataset_size, replace=False)
-    return Subset(dataset, dataset_indices)
+    reduced_dataset, _ = random_split(dataset, [dataset_size, len(dataset) - dataset_size], torch.Generator().manual_seed(42))
+    return reduced_dataset
