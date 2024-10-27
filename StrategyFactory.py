@@ -7,10 +7,8 @@ from flwr.common import ndarrays_to_parameters
 def strategyFactory(strategyStr, modelString):
     if(strategyStr == "FedAvg"):
         return instanciateFedAvg()
-    
     elif(strategyStr == "FedAdam"):
         return instanciateFedAdam(modelString)
-    
     else:
         raise NotImplementedError("The strategy " + strategyStr + " is not implemented")
 
