@@ -17,6 +17,7 @@ def instanciateFedAvg():
         on_fit_config_fn=fit_config,
         on_evaluate_config_fn=fit_config,
         evaluate_metrics_aggregation_fn=weighted_average
+
     )
 
 def instanciateFedAdam(modelString):

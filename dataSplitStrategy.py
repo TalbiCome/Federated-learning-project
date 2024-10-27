@@ -3,16 +3,19 @@ from torch.utils.data import DataLoader, random_split, Subset
 import numpy as np
 
 
-def splitDataset(num_clients, trainset, data_split):
+def splitDataset(num_clients, trainset, data_split, clientType = "base"):
     if data_split == "iid":
         return iidSplit(num_clients, trainset)
-
     elif data_split == "non_iid_number":
         return nonIidSplit(num_clients, trainset)
-
     elif data_split == "non_iid_class":
         return nonIidClassSplit(num_clients, trainset)
-    
+    elif data_split == "non_iid_mobile":
+        #the dataset size must be reduced before the call of splitDataset in prepare_dataset.py
+        return nonIidSplit(num_clients, trainset)
+    elif data_split == "non_iid_server":
+        #the dataset size must be reduced before the call of splitDataset in prepare_dataset.py
+        return nonIidSplit(num_clients, trainset)
     else:
         raise NotImplementedError("The data split is not implemented")
 
@@ -40,3 +43,26 @@ def nonIidClassSplit(num_clients, trainset):
     for i in range(num_clients):
         datasets.append(Subset(trainset, data_indices_each_client[i]))
     return datasets
+
+def nonIidMobileShrinkDatasets(num_clients, trainset, testset, clientType):
+    if(clientType == "mobile"):
+        trainset = keepOnlyXPercent(trainset, 0.70)
+        testset = keepOnlyXPercent(testset, 0.70)
+    elif(clientType == "server" or clientType == "laptop"):
+        trainset = keepOnlyXPercent(trainset, 0.15)
+        testset = keepOnlyXPercent(testset, 0.15)
+    return testset, trainset
+
+def nonIidServerShrinkDatasets(num_clients, trainset, testset, clientType):
+    if(clientType == "mobile" or clientType == "laptop"):
+        trainset = keepOnlyXPercent(trainset, 0.15)
+        testset = keepOnlyXPercent(testset, 0.15)
+    elif(clientType == "server" ):
+        trainset = keepOnlyXPercent(trainset, 0.70)
+        testset = keepOnlyXPercent(testset, 0.70)
+    return testset, trainset
+
+def keepOnlyXPercent(dataset, percent):
+    dataset_size = int(percent * len(dataset))
+    reduced_dataset, _ = random_split(dataset, [dataset_size, len(dataset) - dataset_size], torch.Generator().manual_seed(42))
+    return reduced_dataset
