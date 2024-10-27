@@ -19,8 +19,10 @@ def load_datasets(num_clients: int, dataset, data_split, clientType = "base"):
             testset, trainset = nonIidMobileShrinkDatasets(num_clients, trainset, testset, clientType)
         elif(data_split == "non_iid_server"):
             testset, trainset = nonIidServerShrinkDatasets(num_clients, trainset, testset, clientType)
+        elif data_split == "iid":
+            pass
         else:
-            raise NotImplementedError("The data split is not implemented with non base client type, choose either non_iid_mobile or non_iid_server as data split")
+            raise NotImplementedError("The data split is not implemented with non base client type, choose either non_iid_mobile or non_iid_server, iid as data split")
 
     # Split each partition into train/val and create DataLoader
     datasets = splitDataset(num_clients, trainset, data_split, clientType)

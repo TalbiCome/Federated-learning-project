@@ -62,30 +62,13 @@ class FlowerClient2(fl.client.NumPyClient):
         elif modelName == "ResNet34":
             return models.resnet34(pretrained=False).to(DEVICE)
 
-    def __init__(self, cid, data_split, dataset, local_epochs, n, modelName):
+    def __init__(self, cid, data_split, dataset, local_epochs, n, modelName, client_type):
         self.cid = cid
-        modelName = self.getModelNameAccordingToClientType()
         self.net = self.getModel(modelName)
         self.epochs = local_epochs
-        self.client_type = self.type_client()
+        self.client_type = client_type
         self.trainloader, self.valloader, _ = prepare_dataset.get_data_loaderTyped(n, cid, data_split=data_split, dataset=dataset, clientType=self.client_type)
         print(f"Client {self.cid} type: {self.client_type}, trainingSetLength: {len(self.trainloader.dataset)}, model:{modelName}")
-
-    def getModelNameAccordingToClientType(self):
-        if self.cid < 3:
-            return "CNN"
-        elif self.cid < 6:
-            return "ResNet18"
-        else:
-            return "ResNet34"
-
-    def type_client(self):
-        if self.cid < 3:
-            return "mobile"
-        elif self.cid < 6:
-            return "laptop"
-        else:
-            return "server"
 
     def get_parameters(self, config):
         return [val.cpu().numpy() for _, val in self.net.state_dict().items()]
