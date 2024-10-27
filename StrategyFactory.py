@@ -23,7 +23,7 @@ def instanciateFedAvg():
         evaluate_metrics_aggregation_fn=weighted_average
     )
 
-class specialFedAvg(fl.server.strategy.FedAvg):
+class clusterFedAvg(fl.server.strategy.FedAvg):
     def __init__(self, modelString, numRound):
         self.params = getModelParameters(modelString)
         self.result = None
@@ -41,7 +41,7 @@ class specialFedAvg(fl.server.strategy.FedAvg):
         round = metrics[0][1]["round"]
         examples = [num_examples for num_examples, _ in metrics]
         accuracy = sum(accuracies) / sum(examples)
-        print(f"Round {round} Global model test accuracy: {accuracy}")
+        print(f"Round {round} cluster model test accuracy: {accuracy}")
         # Aggregate and return custom metric (weighted average)
         try:
             with open('log.txt', 'a') as f:
@@ -55,6 +55,7 @@ class specialFedAvg(fl.server.strategy.FedAvg):
                 f.write(str(accuracy)+" ")
         if(round == self.numRound):
             self.result = accuracy
+            print("Cluster model test accuracy: " + str(accuracy))
         return {"accuracy": {accuracy}}
 
 def instanciateFedAdam(modelString):
