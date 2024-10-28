@@ -24,7 +24,7 @@ def instanciateFedAvg():
 class clusterFedAvg(fl.server.strategy.FedAvg):
     def __init__(self, modelString, numRound):
         self.params = getModelParameters(modelString)
-        self.result = None
+        self.result = []
         self.numRound = numRound
         super().__init__(
             initial_parameters=ndarrays_to_parameters(self.params),
@@ -51,8 +51,9 @@ class clusterFedAvg(fl.server.strategy.FedAvg):
                 if round == 1:
                     f.write("\n-------------------------------------\n")
                 f.write(str(accuracy)+" ")
+        
+        self.result.append(accuracy)
         if(round == self.numRound):
-            self.result = accuracy
             print("Cluster model test accuracy: " + str(accuracy))
         return {"accuracy": {accuracy}}
 

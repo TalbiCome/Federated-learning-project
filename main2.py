@@ -110,22 +110,21 @@ class clusteredFedAvg():
         )
 
     def printMultiModelSimulationOutput(self):
-        print("Simulation done!")
-        print("results = " + "mobile: " + str(self.strategy1.result) + "laptop: " + str(self.strategy2.result) + "server: " + str(self.strategy3.result))
+        print("\nMulti model simulation done!\n")
+        print("results = " + "mobile: " + str(self.strategy1.result) + "\nlaptop: " + str(self.strategy2.result) + "\nserver: " + str(self.strategy3.result))
 
     def printCNNOnlySimulationOutput(self):
-        print("Simulation done!")
-        print("results = " + "mobile: " + str(self.strategy1.result) + "laptop: " + str(self.strategy4.result) + "server: " + str(self.strategy5.result))
+        print("\nCNN only simulation done!\n")
+        print("results = \n" + "mobile: " + str(self.strategy1.result) + "\nlaptop: " + str(self.strategy4.result) + "\nserver: " + str(self.strategy5.result))
 
 if __name__ == "__main__":
-
     useClusteredMultimodelFedAvg = False
 
+    obj = clusteredFedAvg(rounds)
+
     if(useClusteredMultimodelFedAvg):
-        obj = clusteredFedAvg(rounds)
         obj.run_MultiModelSimulation()
         obj.printMultiModelSimulationOutput()
     else:
-        obj = clusteredFedAvg(rounds)
         obj.runCNNOnlySimulation()
-        obj.printMultiModelSimulationOutput()
+        obj.printCNNOnlySimulationOutput()
