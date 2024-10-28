@@ -28,6 +28,8 @@ class clusteredFedAvg():
         self.strategy1 = clusterFedAvg("CNN", rounds)
         self.strategy2 = clusterFedAvg("ResNet18", rounds)
         self.strategy3 = clusterFedAvg("ResNet34", rounds)
+        self.strategy4 = clusterFedAvg("CNN", rounds)
+        self.strategy5 = clusterFedAvg("CNN", rounds)
 
     def server_fn1(self, context: Context) -> ServerAppComponents:
         config = ServerConfig(num_rounds=rounds)
@@ -41,6 +43,14 @@ class clusteredFedAvg():
         config = ServerConfig(num_rounds=rounds)
         return ServerAppComponents(strategy=self.strategy3, config=config)
     
+    def server_fn4(self, context: Context) -> ServerAppComponents:
+        config = ServerConfig(num_rounds=rounds)
+        return ServerAppComponents(strategy=self.strategy4, config=config)
+
+    def server_fn5(self, context: Context) -> ServerAppComponents:
+        config = ServerConfig(num_rounds=rounds)
+        return ServerAppComponents(strategy=self.strategy5, config=config)
+    
     def client_fn1(self, context: Context) -> Client:
         node_id = context.node_config["partition-id"]-1
         return FlowerClient2(node_id, data_split, dataset, local_epochs, n, "CNN", "mobile").to_client()
@@ -52,8 +62,16 @@ class clusteredFedAvg():
     def client_fn3(self, context: Context) -> Client:
         node_id = context.node_config["partition-id"]-1
         return FlowerClient2(node_id, data_split, dataset, local_epochs, n, "ResNet34", "server").to_client()
+    
+    def client_fn4(self, context: Context) -> Client:
+        node_id = context.node_config["partition-id"]-1
+        return FlowerClient2(node_id, data_split, dataset, local_epochs, n, "CNN", "laptop").to_client()
+    
+    def client_fn5(self, context: Context) -> Client:
+        node_id = context.node_config["partition-id"]-1
+        return FlowerClient2(node_id, data_split, dataset, local_epochs, n, "CNN", "server").to_client()
 
-    def run_simulation(self):
+    def run_MultiModelSimulation(self):
         run_simulation(
             server_app=ServerApp(server_fn=self.server_fn1),
             client_app=ClientApp(client_fn=self.client_fn1),
@@ -72,11 +90,42 @@ class clusteredFedAvg():
             num_supernodes=n,
         )
 
-    def printOutput(self):
+    def runCNNOnlySimulation(self):
+        run_simulation(
+            server_app=ServerApp(server_fn=self.server_fn1),
+            client_app=ClientApp(client_fn=self.client_fn1),
+            num_supernodes=n,
+        )
+
+        run_simulation(
+            server_app=ServerApp(server_fn=self.server_fn4),
+            client_app=ClientApp(client_fn=self.client_fn4),
+            num_supernodes=n,
+        )
+
+        run_simulation(
+            server_app=ServerApp(server_fn=self.server_fn5),
+            client_app=ClientApp(client_fn=self.client_fn5),
+            num_supernodes=n,
+        )
+
+    def printMultiModelSimulationOutput(self):
         print("Simulation done!")
         print("results = " + "mobile: " + str(self.strategy1.result) + "laptop: " + str(self.strategy2.result) + "server: " + str(self.strategy3.result))
 
+    def printCNNOnlySimulationOutput(self):
+        print("Simulation done!")
+        print("results = " + "mobile: " + str(self.strategy1.result) + "laptop: " + str(self.strategy4.result) + "server: " + str(self.strategy5.result))
+
 if __name__ == "__main__":
-    obj = clusteredFedAvg(rounds)
-    obj.run_simulation()
-    obj.printOutput()
+
+    useClusteredMultimodelFedAvg = False
+
+    if(useClusteredMultimodelFedAvg):
+        obj = clusteredFedAvg(rounds)
+        obj.run_MultiModelSimulation()
+        obj.printMultiModelSimulationOutput()
+    else:
+        obj = clusteredFedAvg(rounds)
+        obj.runCNNOnlySimulation()
+        obj.printMultiModelSimulationOutput()
